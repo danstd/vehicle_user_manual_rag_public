@@ -1,0 +1,50 @@
+FROM python:3.12
+
+ENV TZ America/New_York
+
+# Set the working directory within the container
+WORKDIR /rag_flask
+
+# Enable caching of requirements. Set DOCKER_BUILDKIT=1
+COPY requirements.txt /rag_flask/
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+
+COPY ./* /rag_flask/
+
+COPY ../.env /rag_flask/.env
+
+#COPY Application Application
+#COPY requirements.txt requirements.txt
+#COPY .env .env
+
+RUN apt-get update && \
+    apt-get install -y cron
+
+EXPOSE 5000
+
+#WORKDIR /Application
+#RUN pip install -e /Application
+
+RUN useradd -m containeruser
+RUN touch pipeline_log_cron.txt
+RUN touch pipeline_log.log
+RUN chown containeruser pipeline_log.log
+
+ENV PATH="/home/containeruser/.local/bin:$PATH" 
+
+USER containeruser
+
+## Add the cron job
+RUN crontab -l | \
+    { cat; echo "0 0 15 * * python data_pipeline.py" >> \
+    pipeline_log.log; } | crontab -
+
+
+RUN pip install -r requirements.txt
+
+# Line below is for local.
+ENTRYPOINT [ "flask", "run", "--host", "0.0.0.0"]
+
+#ENTRYPOINT ["gunicorn", "app:app"]
+# Define the command to run the Flask application using Gunicorn
+#CMD ["gunicorn", "application:app", "-b", "0.0.0.0:5000", "-w", "4"]

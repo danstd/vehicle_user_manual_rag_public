@@ -1,0 +1,98 @@
+services:
+  #server:
+  #  build:
+  #    context: .
+  #  ports:
+  #    - 8001:8001
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
+    container_name: u_manual_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - network.host=0.0.0.0
+
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - app-network
+
+  ollama:
+    image: ollama/ollama
+    build: 
+      dockerfile: Dockerfile
+      context: ./ollama 
+    container_name: u_manual_ollama
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:latest
+    container_name: u_manual_postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ${PWD}/postgres_data/:/var/lib/postgresql/data/
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    
+  nginx:
+    image: nginx
+    container_name: u_manual_nginx
+    volumes:
+        - ./nginx:/etc/nginx/conf.d
+        - ./front-end:/var/www/front-end
+    ports:
+        - "80:80"
+    networks:
+      - app-network
+
+  back-end:
+    image: rag_flask
+    container_name: u_manual_rag_flask
+    env_file: ".env"
+    environment:
+      - FLASK_APP=${FLASK_APP}
+      - HOST=${HOST}
+      - OLLAMA_API_KEY=${OLLAMA_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_HOST=${HOST}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_USER=${POSTGRES_USER}
+    build: 
+      dockerfile: Dockerfile
+      context: ./rag_flask 
+    volumes:
+        - .env:/rag_flask/.env
+        - ./rag_flask:/rag_flask 
+    ports:
+      - "5000:5000"
+      - "8888:8888"
+    #expose:
+    #    - "5000"
+    networks:
+      - app-network
+
+volumes:
+  postgres-db-volume:
+  ollama:
+#  prefect:
+  rag_flask:
+  nginx:
+
+
+networks:
+  app-network:
+    driver: bridge

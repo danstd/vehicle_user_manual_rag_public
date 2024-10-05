@@ -1,0 +1,24 @@
+{
+"search_type": "knn",
+"all_search_type_options": ["knn", "hybrid", "text"],
+"sentence_transformer_model_name": "multi-qa-mpnet-base-dot-v1",
+"transformer_model_prefix": "mpnet_",
+"index_name": "mpnet_cosine_manual_index",
+"num_es_results": 5,
+"num_es_candidates": 25,
+"es_knn_similarity_measure": "cosine",
+"es_knn_similarity_threshold": 0.2,
+"eval_model": "gpt-4o-mini",
+"rewrite_user_query": "false",
+"evaluate_response": "false",
+"model_options": ["gpt-4o-mini", "gemma2", "dummy"],
+"vehicles": [
+	{"vehicle": "Toyota Rav4 2020",
+	"url": "https://assets.sia.toyota.com/publications/en/om-s/OM0R024U/pdf/OM0R024U.pdf",
+	"prefix": "rav2020_"},
+	{"vehicle": "Toyota Tacoma 2020",
+	"url": "https://assets.sia.toyota.com/publications/en/om-s/OM04025U/pdf/OM04025U.pdf",
+	"prefix": "tacoma2020_"}
+],
+"prompt": "Answer the QUESTION soley based on the CONTEXT from the user manual. Your response must include the relevant page numbers from the CONTEXT."
+}
