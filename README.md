@@ -8,22 +8,22 @@ The aim of this project is to create an application to allow users to easily ask
 The initial goal for this project was to create a working application for a single vehicle type, but enhancements have been made to include additional vehicles. As a working prototype, the 2020 Toyota Tacoma and 2020 Toyota Rav4 are included as vehicle search options.
 
 ### Technologies
- - *LLM*: OpenAI and Ollama are both usable with this application. Gemma2 and gpt-4o-mini are given as options in the [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file (see below), but other models may be added by updating the config.json file.
+ - *LLM*: OpenAI and Ollama are both usable with this application. Gemma2 and gpt-4o-mini are given as options in the [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file (see below), but other models may be added by updating the config.json file.
  - *Knowledge base*: Elasticsearch is used to store text as wel as vector embeddings for the user manual information.
- - *Monitoring*: This application does not have a front-end enabled for monitoring, but user interactions and user feedback are recorded and saved to a Postgres database. The [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file can be used to enable or disable online LLM evaluation of generated answers and user query rewriting.
+ - *Monitoring*: This application does not have a front-end enabled for monitoring, but user interactions and user feedback are recorded and saved to a Postgres database. The [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file can be used to enable or disable online LLM evaluation of generated answers and user query rewriting.
 - *Interface*: The user interface for this project is a Flask application. [Flask is a popular lightweight web application framework for Python](https://palletsprojects.com/projects/flask/).
 - *Ingestion pipeline*: A python file is used to run the ingestion pipeline for this application - *data_pipeline.py*.
 
 ### Best Practices
-- Hybrid search with elasticsearch may be used if set in the [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file. By default the best settings as determined by evaluation (see [evaluation/es_retrieval_evaluation.ipynb](https://github.com/danstd/vehicle_user_manual_rag/blob/main/evaluation/es_retrieval_evaluation.ipynb)) are already set in the [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file.
-- User query rewriting may be used to handle user questions asking for the location of information in the user manuals; this is also controlled in the [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file.
+- Hybrid search with elasticsearch may be used if set in the [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file. By default the best settings as determined by evaluation (see [evaluation/es_retrieval_evaluation.ipynb](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/evaluation/es_retrieval_evaluation.ipynb)) are already set in the [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file.
+- User query rewriting may be used to handle user questions asking for the location of information in the user manuals; this is also controlled in the [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file.
 
 - 
 ### Instructions
 
 #### Quick start
- - Clone this repository: `git clone https://github.com/danstd/vehicle_user_manual_rag.git`
- - Move to new directory: `cd vehicle_user_manual_rag`
+ - Clone this repository: `git clone https://github.com/danstd/vehicle_user_manual_rag_public.git`
+ - Move to new directory: `cd vehicle_user_manual_rag_public`
  - Create *.env* file. `cp .env_reference .env`
  - Add OpenAI keys to *.env* file if you would like to use OpenAI models.
  - Build and start docker containers: `docker-compose up -d`
@@ -50,7 +50,7 @@ The initial goal for this project was to create a working application for a sing
     - FLASK_APP=rag_flask *name of Flask application*
     - SECRET_KEY *Flask app secret key. Needed for creating session IDs. May be set as desired for local application.*
 
-#### [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) File (rag_flask/data/config.json)
+#### [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) File (rag_flask/data/config.json)
 The config file contains necessary variables and data for running the Flask application. By default no changes need to be made for the application to function.
 
 ##### Config JSON file explanation
@@ -92,7 +92,7 @@ After starting the Flask application will be available at *localhost:5000* in yo
     - *rag_query.py*: This file contains the RagQuery class which handles all RAG functions- searching using elasticsearch (incuding text, vector, and hybrid search), interacting with local Ollama container or with the OpenAI API. This class contains methods for user query rewriting to handle user questions about the location of information in the user manual (e.g. 'What page is X on?'). Online evaluation based on DataTalks Club Zoomcamp module 4 is enabled, including recording cost and tokens of evaluation and user query rewriting if applicable. Most methods are loosley coupled to enable testing and evaluation of retrieval and offline RAG performance.
     - *requirements.txt* The python requirements file for the application.
 
- - *data*: This directory contains reference and downloaded data needed for the application. This directory stores downloaded pdf files, processed json files of the pdfs, parquet files from the json data including sentence-transformer embedded text, and the aforementioned [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file. Only the [config.json](https://github.com/danstd/vehicle_user_manual_rag/blob/main/rag_flask/data/config.json) file is needed to start the application. the rest are created by the *data_pipeline.py* run.
+ - *data*: This directory contains reference and downloaded data needed for the application. This directory stores downloaded pdf files, processed json files of the pdfs, parquet files from the json data including sentence-transformer embedded text, and the aforementioned [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file. Only the [config.json](https://github.com/danstd/vehicle_user_manual_rag_public/blob/main/rag_flask/data/config.json) file is needed to start the application. the rest are created by the *data_pipeline.py* run.
     <br>
     - *templates*: this directory contains the single jinja2 html template file for the Flask application, *user_query.html*.
     <br>
